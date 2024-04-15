@@ -1,9 +1,9 @@
 library(tidyverse)
 library(hoopR)
 library(rvest)
-output = "/ace/home/ymelamed/matchup/"
+output = 'PATH'
 #defense matchups
-match=  nba_leagueseasonmatchups(league_id = '00', season = year_to_season(most_recent_nba_season() - 1))$SeasonMatchups
+match =  nba_leagueseasonmatchups(league_id = '00', season = year_to_season(most_recent_nba_season() - 1))$SeasonMatchups
 match$MATCHUP_TIME_SEC=as.numeric(match$MATCHUP_TIME_SEC)
 match = match %>% 
   mutate_at(6:27, as.numeric)
@@ -23,8 +23,7 @@ matchup_stats = match %>%
 matchup_stats = matchup_stats %>% 
   mutate(off_head=nba_playerheadshot(player_id = OFF_PLAYER_ID),
          def_head=nba_playerheadshot(player_id = DEF_PLAYER_ID))
-## add possibility to filter possesions
-## add average points per posession and diff    ---- add columns (using brf data), and then in the shiny app, spread_longer so that theres a row for value, avg, diff
+## add average points per posession and diff (from bref)
 #scrape brf possesion data
 library(stringi)
 url = "https://www.basketball-reference.com/leagues/NBA_2024_per_poss.html"
@@ -35,8 +34,7 @@ df=page_html %>%
   .[[1]] %>%
   rvest::html_table(header = TRUE)
 df$Player = gsub("`", "", iconv(df$Player, from = "UTF-8", , to='ASCII//TRANSLIT'))
-### find player average p+a per possesion
-#### add breference TS data
+## add breference TS data
 library(stringi)
 url_ts = "https://www.basketball-reference.com/leagues/NBA_2024_advanced.html"
 page_html_ts <- url_ts %>%
@@ -64,8 +62,6 @@ poss$Player[poss$Player=="A.J. Green"]="AJ Green"
 poss$Player[poss$Player=="Reggie Bullock"]="Reggie Bullock Jr."
 poss$Player[poss$Player=="Matthew Hurt"]="Matt Hurt"
 
-
-################################### optional: add averages
 #join with matchup stats
 matchup_stats = matchup_stats %>% 
   left_join(poss, by = c("OFF_PLAYER_NAME"="Player")) 
@@ -91,11 +87,3 @@ positional_stats=
   summarise(mean_points=mean(PLAYER_PTS), mean_fga=mean(MATCHUP_FGA)) %>% 
   arrange(-mean_points)
 write.csv(positional_stats, paste0(output, 'positional_stats.csv'), row.names = FALSE)
-
-#to do
-#fix formatting
-#add description
-#make plots smaller, side by side
-# if need less data, remove avg weights
-
-#add exploration of positional issues in about section
