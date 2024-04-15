@@ -10,4 +10,4 @@ Utilizing NBA API data from Saiem Gilani's hoopR package, I created a shiny app 
 # Screenshot:
 
 [![](kawhi.PNG)](https://ymelamed.shinyapps.io/matchup/)
-[![](harden.PNG){width="3000"}](https://ymelamed.shinyapps.io/matchup/)
+[![](harden.PNG)](https://ymelamed.shinyapps.io/matchup/)
